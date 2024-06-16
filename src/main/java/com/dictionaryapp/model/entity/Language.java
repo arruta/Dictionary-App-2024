@@ -3,6 +3,7 @@ package com.dictionaryapp.model.entity;
 import com.dictionaryapp.model.enums.LanguageEnum;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,6 +23,10 @@ public class Language {
 
     @OneToMany(mappedBy = "language")
     private Set<Word> words;
+
+    public Language() {
+        this.words=new HashSet<>();
+    }
 
     public Long getId() {
         return id;
