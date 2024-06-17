@@ -1,5 +1,7 @@
 package com.dictionaryapp.service.impl;
 
+import com.dictionaryapp.config.UserSession;
+import com.dictionaryapp.model.dto.bindng.UserLoginDTO;
 import com.dictionaryapp.model.dto.bindng.UserRegisterDTO;
 import com.dictionaryapp.model.entity.User;
 import com.dictionaryapp.repo.UserRepository;
@@ -7,6 +9,8 @@ import com.dictionaryapp.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
@@ -18,10 +22,16 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
+    private final UserSession userSession;
+
+    public UserServiceImpl(UserRepository userRepository,
+                           ModelMapper modelMapper,
+                           PasswordEncoder passwordEncoder,
+                           UserSession userSession) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
+        this.userSession = userSession;
     }
 
     @Override
@@ -41,6 +51,30 @@ public class UserServiceImpl implements UserService {
         mapped.setPassword(passwordEncoder.encode(mapped.getPassword()));
 
         userRepository.save(mapped);
+
+        return true;
+    }
+
+    @Override
+    public boolean login(UserLoginDTO data) {
+        Optional<User> byUsername = userRepository.findByUsername(data.getUsername());
+
+//        byUsername
+//                .filter(...)
+//                .map(user -> userSession.login(user))
+//                .isPresent();
+
+        if (byUsername.isEmpty()) {
+            return false;
+        }
+
+        User user = byUsername.get();
+
+        if (!passwordEncoder.matches(data.getPassword(), user.getPassword())){
+            return false;
+        }
+
+        userSession.login(user);
 
         return true;
     }
