@@ -16,7 +16,14 @@
         <!--    <div th:each="error: ${#fields.errors()}" th:text="${error}" class="text-danger">Error messages</div>-->
 
         <div th:if="${userPassMismatch}" class="text-danger">Error messages</div>
-        <div th:if="${userPassMismatch}" class="text-danger">Incorrect username or password!</div>
+
+        <div th:if="${#fields.hasErrors('username')}"
+             th:errors="*{username}"
+             class="text-danger">Incorrect username or password!</div>
+
+        <div th:if="${#fields.hasErrors('password')}"
+             th:errors="*{password}"
+             class="text-danger">Incorrect username or password!</div>
 
         <div class="form-group">
             <div class="label-holder text-white d-flex justify-content-center">
@@ -27,7 +34,8 @@
                     class="form-control"
                     id="username"
                     name="username"
-                    th:field="*{username}"/>
+                    th:field="*{username}"
+                    th:errorclass="bg-danger"/>
         </div>
 
         <div class="form-group">
@@ -38,7 +46,8 @@
                     type="password"
                     class="form-control"
                     id="password"
-                    name="password"/>
+                    name="password"
+                    th:errorclass="bg-danger"/>
         </div>
 
         <div class="button-holder d-flex justify-content-center">
